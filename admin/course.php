@@ -32,6 +32,8 @@ if (array_key_exists("id", $_SESSION)) {
   /*– ログインしている時 ———————–*/
 
 
+
+
 /*———————————–
 送信ボタンを押した時の挙動
 ———————————–*/
@@ -49,12 +51,12 @@ if (array_key_exists("submit", $_POST)) {
       $error .= "An course_id is required<br>";
 
   }
-
-  if (!$_POST['course_name']) {
-
-      $error .= "A course_name is required<br>";
-
-  }
+  //
+  // if (!$_POST['course_name']) {
+  //
+  //     $error .= "A course_name is required<br>";
+  //
+  // }
 
   if ($error != "") {
 
@@ -73,46 +75,59 @@ if (array_key_exists("submit", $_POST)) {
 
     } else {
 
-        $query = "INSERT INTO `course` (`course_id`, `course_name`) VALUES ('".mysqli_real_escape_string($link, $_POST['course_id'])."', '".mysqli_real_escape_string($link, $_POST['course_name'])."')";
+        $query = "INSERT INTO `course` (`course_id`) VALUES ('".mysqli_real_escape_string($link, $_POST['course_id'])."')";
         mysqli_query($link, $query);
 
-        // 講座のレコード行数を、デフォルトでsortに代入する
+        // 講座のレコード行数を、デフォルトでsortに代入する（講座一覧の一番後ろに挿入される）
         $courseQuery = "SELECT * FROM `course`";
         $courseResult = mysqli_query($link, $courseQuery);
         $sortNum = mysqli_num_rows($courseResult);
-        echo "<script>alert(".$sortNum.");</script>";
         $sortQuery = 'UPDATE `course` SET sort = "'.$sortNum.'" WHERE course_id = "'.$_POST["course_id"].'"';
-        echo "<script>alert(".$sortQuery.");</script>";
         mysqli_query($link, $sortQuery);
 
-        //
-        // if (!mysqli_query($link, $query)) {
-        //
-        //     $error = "<p>Could not sign you up - please try again later.</p>";
-        //
-        // } else {
-        //
-        //     $query = "UPDATE `users` SET password = '".md5(md5(mysqli_insert_id($link)).$_POST['password'])."' WHERE id = ".mysqli_insert_id($link)." LIMIT 1";
-        //
-        //     mysqli_query($link, $query);
-        //
-        //     $_SESSION['id'] = mysqli_insert_id($link);
-        //
-        //     if ($_POST['stayLoggedIn'] == '1') {
-        //
-        //         setcookie("id", mysqli_insert_id($link), time() + 60*60*24*365);
-        //
-        //     }
-        //
-        //     header("Location: course/list.php");
-        //
-        // }
+?>
+      <div id="youtubeapi"></div>
+      <script>
+        // course_name と　course_time　は、YouTube APIから取得する。
+          $('#youtubeapi').load( '/admin/youtube_api.php',{video_id:"<?php echo $_POST['course_id']; ?>"});
 
+
+
+/*
+          jQuery(function($){
+            //ajax送信
+            $.ajax({
+                url : "youtube_api.php",
+                type : "POST",
+                dataType:"json",
+                data : {course_id:"ssss"},
+                error : function(XMLHttpRequest, textStatus, errorThrown) {
+                    console.log("ajax通信に失敗しました");
+
+                    console.log("XMLHttpRequest : " + XMLHttpRequest.status);
+                    console.log("textStatus     : " + textStatus);
+                    console.log("errorThrown    : " + errorThrown.message);
+                },
+                success : function(response) {
+                    console.log("ajax通信に成功しました");
+                    // console.log('停止時間は'+response[0]);
+                    // console.log('今の時刻は'+response[1]);
+                    // document.cookie = 'course_id=<?php echo $_GET["course_id"]; ?>';
+                    // document.cookie = 'status_text='+ytPlayer.getCurrentTime();
+                    // document.cookie = 'pausetime='+response[0];
+                    // document.cookie = 'pause_or_ended=pause';
+                    // $('#status').load('./ajax_successed.php');
+                }
+            });
+        });
+*/
+      </script>
+<?php
     }
 
   }
-
 }
+
 
 
 ?>
@@ -137,6 +152,9 @@ if ($listResult = mysqli_query($link,$listQuery)) {
   <th>
     講座名
   </th>
+  <th>
+    時間
+  </th>
   <th style="text-align:center;">
     削除ボタン
   </th>
@@ -151,6 +169,9 @@ while ($table=mysqli_fetch_array($listResult)) {
   </td>
   <td>
     <?php print(htmlspecialchars($table['course_name'])); ?>
+  </td>
+  <td>
+    <?php print(htmlspecialchars($table['course_time'])); ?>
   </td>
   <td style="text-align:center;">
     <a href="delete.php?course_id=<?php print(htmlspecialchars($table['course_id'])); ?>" onclick="return confirm('ID <?php echo $table['course_id'] ?> を削除しても良いですか？');">aaa</a>
@@ -173,8 +194,8 @@ while ($table=mysqli_fetch_array($listResult)) {
 
       <input type="text" name="course_id" placeholder="course_id">
 
+<!--
       <input type="text" name="course_name" placeholder="course_name">
-  <!--
       <input type="checkbox" name="stayLoggedIn" value=1>
 
       <input type="hidden" name="signUp" value="1"> -->
@@ -203,6 +224,9 @@ include($_SERVER['DOCUMENT_ROOT']."/_include/footer.php");
 
 // 共通JS
 include($_SERVER['DOCUMENT_ROOT']."/_include/common_js.php");
+
+
+
 ?>
 <!-- ▼ このページ用JS ▼ -->
 

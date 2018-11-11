@@ -20,6 +20,7 @@ $courseQuery = 'SELECT * FROM course WHERE course_id ="'.$courseId.'"';
 $courseResult = mysqli_query($link,$courseQuery);
 while($courseRow = mysqli_fetch_array($courseResult)){
   $courseName = $courseRow['course_name'];
+  $courseTime = $courseRow['course_time'];
 }
 
 // 一回目の視聴かどうかのフラグを立てる
@@ -35,9 +36,10 @@ while($statusRow = mysqli_fetch_array($statusResult)){
 
 if ($firstFlug == true ) {
   // 一回目の視聴の場合は、INSERT文を入れる
-  $historyQuery = "INSERT INTO `history`(`course_id`,`course_name`,`user_id`,`datetime`,`status`)
+  $historyQuery = "INSERT INTO `history`(`course_id`,`course_name`,`course_time`,`user_id`,`datetime`,`status`)
   VALUES ('".$_COOKIE["course_id"]."',
   '".$courseName."',
+  '".$courseTime."',
   '".$_SESSION['id']."',
   '".$nowtime."',
   '".$statusInsert."')";

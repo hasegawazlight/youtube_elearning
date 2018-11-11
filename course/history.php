@@ -73,7 +73,13 @@ if (mysqli_num_rows($historyResult) > 0) {
           </td>
           <td>
 <?php
-      echo $row['status'];
+      if ($row['status'] != '完了') {
+        // ステータスが完了ではない場合、前回に再生した時間／講座の時間　のパーセンテージを表示
+        $statusRatio = $row['status'] / $row['course_time'] * 100;
+        echo floor($statusRatio).'％';
+      }else{
+        echo $row['status'];
+      }
 ?>
           </td>
           <td>

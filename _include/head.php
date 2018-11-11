@@ -24,4 +24,7 @@ if (isset($title)) {
 <link rel="stylesheet" href="/asset/css/style.css">
 <!-- ▲ 共通CSS ▲ -->
 
+<!-- JQuery -->
+<script src="/_libs/jquery-3.3.1.min.js"></script>
+
 </head>
